@@ -215,38 +215,43 @@ function filterNames(input) {
     }
 
 
-    //create error message when is no search result found ***** not working properly ***
+    //create error message when is no search result found
     if (noFound) {
         let errorMessage = document.querySelector('.no-result');
         if (!errorMessage) {
             errorMessage = document.createElement('h2');
             errorMessage.className = 'no-result';
             errorMessage.innerHTML = 'No Match Found';
+            errorMessage.style.color = '#E25A53';
             gallery.appendChild(errorMessage);
         }
-
     }
-    /***
-    ** ---------------------------------------
-       change background color and text color
-    ** ---------------------------------------
-    ***/
-
-    function changeBG() {
-        document.body.style.background = 'rgba(173, 220, 202)';
+    if (!noFound) {
+        const showResult = document.querySelector('.no-result');
+        showResult.style.display = 'none';
     }
+}
+/***
+** ---------------------------------------
+   change background color and text color
+** ---------------------------------------
+***/
 
-    function changeText() {
-        document.querySelector('h1').style.color = 'darkblue';
+function changeBG() {
+    document.body.style.background = 'rgba(173, 220, 202)';
+}
 
+function changeText() {
+    document.querySelector('h1').style.color = 'darkblue';
+
+}
+
+
+//click anywhere outside of the container to close modal
+window.addEventListener('click', (e) => {
+    const modalWindow = document.querySelector('.modal-container');
+
+    if (e.target == modalWindow) {
+        modalWindow.remove();
     }
-
-
-    //click anywhere outside of the container to close modal
-    window.addEventListener('click', (e) => {
-        const modalWindow = document.querySelector('.modal-container');
-
-        if (e.target == modalWindow) {
-            modalWindow.remove();
-        }
-    });
+});
