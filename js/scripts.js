@@ -214,12 +214,16 @@ function filterNames(input) {
         }
     }
 
-    
+
     //create error message when is no search result found ***** not working properly ***
     if (noFound) {
-        gallery.innerHTML = '<h2 class="no-result">No Match Found</h2>';
-        const showResults = document.querySelector('.no-result');
-        showResults.style.color = '#E25A53';
+        const errorMessage = document.createElement('h2');
+        errorMessage.className = 'no-result';
+        errorMessage.innerHTML = 'No Match Found';
+        gallery.appendChild(errorMessage);
+
+        //      const showResults = document.querySelector('.no-result');
+        //      showResults.style.color = '#E25A53';
     }
 
 }
