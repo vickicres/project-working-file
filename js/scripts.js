@@ -205,7 +205,7 @@ function filterNames(input) {
         const name = empolyeeCard[i].querySelector('h3').textContent.toLowerCase();
         if (name.includes(input)) {
             empolyeeCard[i].style.display = '';
-            foundCardsArr.push(empolyeeCard[i])
+            foundCardsArr.push(empolyeeCard[i]);
         } else {
             empolyeeCard[i].style.display = 'none';
         }
