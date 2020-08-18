@@ -198,25 +198,21 @@ function createSearch() {
 
 // create a function to search by name
 function filterNames(input) {
-    let noFound = false;
     const empolyeeCard = document.querySelectorAll('.card');
-
+    const foundCardsArr = [];
     //using for loop to loop though the random empolyee cards to find the match one
     for (let i = 0; i < empolyeeCard.length; i += 1) {
         const name = empolyeeCard[i].querySelector('h3').textContent.toLowerCase();
         if (name.includes(input)) {
             empolyeeCard[i].style.display = '';
-            noFound = false;
-
+            foundCardsArr.push(empolyeeCard[i])
         } else {
             empolyeeCard[i].style.display = 'none';
-            noFound = true;
         }
     }
-
-
     //create error message when is no search result found
-    if (noFound) {
+    if (foundCardsArr.length === 0) {
+        console.log(foundCardsArr)
         let errorMessage = document.querySelector('.no-result');
         if (!errorMessage) {
             errorMessage = document.createElement('h2');
@@ -225,10 +221,11 @@ function filterNames(input) {
             errorMessage.style.color = '#E25A53';
             gallery.appendChild(errorMessage);
         }
-    }
-    if (!noFound) {
+    } else {
         const showResult = document.querySelector('.no-result');
-        showResult.style.display = 'none';
+        if (showResult) {
+            gallery.removeChild(showResult);
+        }
     }
 }
 /***
