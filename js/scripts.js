@@ -120,7 +120,7 @@ function nextPrevBtn(data, i) {
     const prevBtn = containerDiv.querySelector('.modal-prev');
     const nextBtn = containerDiv.querySelector('.modal-next');
     const modalContainer = document.querySelector('.modal-container');
-    let users = [];
+    let users = 0;
     prevBtn.addEventListener('click', (e) => {
         generateModal(data, i - 1);
 
@@ -133,13 +133,17 @@ function nextPrevBtn(data, i) {
     });
 
     //show or hide buttons when card was clicked.
-    if (users.length === 0) {
+    if (users === 1) {
         prevBtn.style.display = 'none';
+        nextBtn.style.display = '';
+    } else if (users === 11) {
+        prevBtn.style.display = '';
         nextBtn.style.display = '';
     } else {
         prevBtn.style.display = '';
         nextBtn.style.display = 'none';
     }
+
 
 }
 
