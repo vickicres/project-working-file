@@ -22,7 +22,7 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
         changeText();
         generateProfiles(data.results);
         createSearch();
-        createModalEvents(data.results);
+        createModalEvents(data);
     });
 
 
@@ -64,9 +64,6 @@ function generateProfiles(data) {
 }
 
 
-//function styleCard() {
-//    document.querySelectorAll('.card').style.background = 'rgb(255, 255, 255, 0.9)';
-//}
 
 /*** 
 ** ----------------
@@ -76,39 +73,63 @@ function generateProfiles(data) {
 
 const containerDiv = document.createElement('div');
 
-function generateModal(data, i) {
+function generateModal(data, index) {
+    //create user variable to store multiple users in the card
+    const users = data.results[index];
+    // format users birthday
 
-    //formatted the birthday date
-    const date = new Date(data[i].dob.date);
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const bday = `${day}/${month}/${year}`;
+    //     const date = new Date(user[i].dob.date); // create and formate the birthday date 
+    //    const day = date.getDate (); // get the day
+    //    const month = date.getMonth () + 1; // get the month
+    //    const year = date.getFullYear (); // get the year
 
+    const dob = users.dob.date;
+    const day = users.dob.date.slice(8, 10);
+    const month = users.dob.date.slice(5, 7);
+    const year = users.dob.date.slice(0, 4);
+    const birthday = `${month}/${day}/${year}`;
 
-    const html = `
-             <div class="modal-container">
+    // Create modal HTML container
+    const modalHTML = `<div class="modal-container">
             <div class="modal">
-                <button onclick="closeModel()" type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
                 <div class="modal-info-container">
-                    <img class="modal-img" src=${data[i].picture.large} alt="profile picture">
-                    <h3 id="name" class="modal-name cap">${data[i].name.first} ${data[i].name.last}</h3>
-                    <p class="modal-text">${data[i].email}</p>
-                    <p class="modal-text cap">${data[i].location.city}</p>
+                    <img class="modal-img" src=${users.picture.large} alt="profile picture">
+                    <h3 id="name" class="modal-name cap">${users.name.first} ${users.name.last}</h3>
+                    <p class="modal-text">${users.email}</p>
+                    <p class="modal-text cap">${users.location.city}</p>
                     <hr>
-                    <p class="modal-text">${data[i].phone}</p>
-                    <p class="modal-text">${data[i].location.street.number} ${data[i].location.street.name}, ${data[i].location.city}, ${data[i].location.state} ${data[i].location.postcode}</p>
-                    <p class="modal-text">Birthday: ${bday}</p>
+                    <p class="modal-text">${users.phone}</p>
+                    <p class="modal-text">${users.location.street.number} ${users.location.street.name}, ${users.location.city}, ${users.location.state} ${users.location.postcode}</p>
+                    <p class="modal-text">Birthday: ${birthday}</p>
                 </div>
             </div>
             <div class="modal-btn-container">
                 <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
                 <button type="button" id="modal-next" class="modal-next btn">Next</button>
             </div>`
-    containerDiv.innerHTML = html;
-    nextPrevBtn(data, i);
-    return containerDiv;
+
+    gallery.innerHTML += modalHTML;
+    nextPrevBtn(data, index);
+
+    //    checkDataIndex(index);
+
 }
+
+
+/*** 
+** -----------------------------------------------------
+  create function to the modal when the card was clicked
+** -----------------------------------------------------
+***/
+
+function createModalEvents(data) {
+    const card = document.querySelectorAll('.card');
+    card.forEach((card, index) => {
+        card.addEventListener('click', () => generateModal(data, index));
+    });
+}
+
 
 /*** 
 ** ------------------------------------------------------
@@ -116,63 +137,65 @@ function generateModal(data, i) {
 ** ------------------------------------------------------
 ***/
 
-function nextPrevBtn(data, i) {
-    const prevBtn = containerDiv.querySelector('.modal-prev');
-    const nextBtn = containerDiv.querySelector('.modal-next');
+function nextPrevBtn(data, index) {
+
+    const modalButton = document.querySelector(".modal-close-btn");
     const modalContainer = document.querySelector('.modal-container');
-    let users = 0;
-    prevBtn.addEventListener('click', (e) => {
-        generateModal(data, i - 1);
 
-
+    // Closing modal window
+    modalButton.addEventListener('click', () => {
+        modalContainer.remove();
+        createModalEvents(data, index);
     });
 
-    nextBtn.addEventListener('click', (e) => {
-        generateModal(data, i + 1);
-
+    // create click function for prev button, when modal window is clicked 
+    const prevBtn = document.querySelector('#modal-prev');
+    prevBtn.addEventListener('click', () => {
+        modalContainer.remove();
+        generateModal(data, index - 1);
+    });
+    // create click function for next button, when the next card is clicked 
+    const nextBtn = document.querySelector('#modal-next');
+    nextBtn.addEventListener('click', () => {
+        modalContainer.remove();
+        generateModal(data, index + 1);
     });
 
-    //show or hide buttons when card was clicked.
-    if (users === 1) {
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = '';
-    } else if (users === 11) {
-        prevBtn.style.display = '';
-        nextBtn.style.display = '';
+    // if only one card was shown then hide both next and prev button
+    if (data.results.length === 1) {
+        const modalBtn = document.querySelector('.modal-btn-container');
+        modalBtn.style.display = 'none';
     } else {
-        prevBtn.style.display = '';
-        nextBtn.style.display = 'none';
+        //create a function for prev and next button to show or not show
+        if (index === 0) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = '';
+        } else if (index <= data.results.length - 2) {
+            prevBtn.style.display = '';
+            nextBtn.style.display = '';
+        } else {
+            prevBtn.style.display = '';
+            nextBtn.style.display = 'none';
+        }
     }
 
-
 }
 
-/*** 
-** -------------------------------------------
-  Add event listener when the card was clicked
-** -------------------------------------------
-***/
+//const $employeesInfo = [];
 
-function createModalEvents(data) {
-    const card = document.querySelectorAll('.card');
-    for (let i = 0; i < card.length; i += 1) {
-        card[i].addEventListener('click', () => {
-            body.appendChild(generateModal(data, i));
-        });
-    }
-}
-
-/*** 
-** -------------------
-  Closed modal button
-** -------------------
-***/
-
-function closeModel() {
-    const modalWindow = document.querySelector('.modal-container');
-    modalWindow.remove();
-}
-
+//create a function when the button was hidden or show
+//function checkDataIndex(index) {
+//  if (index === 0) {
+//    $('#modal-prev').hide();
+//    $('#modal-next').show();
+//  } else if (index === $employeesInfo.length - 1) {
+//    $('#modal-next').hide();
+//    $('#modal-prev').show();
+//  } else {
+//    $('#modal-next').show();
+//    $('#modal-prev').show();
+//  }
+//}
 /***
 ** -----------------------
    Create Search function
@@ -184,8 +207,7 @@ function createSearch() {
         `<form action="#" method="get">
         <input type="search" id="search-input" class="search-input" placeholder="Search...">
         <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
-      </form>
-    `
+      </form>`
     search.innerHTML = searchField;
 
     //     add event listener to search input
