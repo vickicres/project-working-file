@@ -2,7 +2,6 @@ const body = document.querySelector('body');
 const gallery = document.getElementById('gallery');
 const search = document.querySelector('.search-container');
 
-
 /***
 ** ---------------
    Fetch API
@@ -27,11 +26,10 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
     });
 
 
-
 /***
-** ---------------
+** ----------------
    Helper functions
-** ---------------
+** ----------------
 ***/
 
 function checkStatus(response) {
@@ -66,9 +64,9 @@ function generateProfiles(data) {
 }
 
 
-function styleCard() {
-    document.querySelectorAll('.card').style.background = 'rgb(255, 255, 255, 0.9)';
-}
+//function styleCard() {
+//    document.querySelectorAll('.card').style.background = 'rgb(255, 255, 255, 0.9)';
+//}
 
 /*** 
 ** ----------------
@@ -78,24 +76,29 @@ function styleCard() {
 
 const containerDiv = document.createElement('div');
 
-function generateModal(data, index) {
+function generateModal(data, i) {
 
     //formatted the birthday date
-    const dob = new Date(data[index].dob.date);
+    const date = new Date(data[i].dob.date);
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const bday = `${day}/${month}/${year}`;
 
-    let html = `
+
+    const html = `
              <div class="modal-container">
             <div class="modal">
                 <button onclick="closeModel()" type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
                 <div class="modal-info-container">
-                    <img class="modal-img" src=${data[index].picture.large} alt="profile picture">
-                    <h3 id="name" class="modal-name cap">${data[index].name.first} ${data[index].name.last}</h3>
-                    <p class="modal-text">${data[index].email}</p>
-                    <p class="modal-text cap">${data[index].location.city}</p>
+                    <img class="modal-img" src=${data[i].picture.large} alt="profile picture">
+                    <h3 id="name" class="modal-name cap">${data[i].name.first} ${data[i].name.last}</h3>
+                    <p class="modal-text">${data[i].email}</p>
+                    <p class="modal-text cap">${data[i].location.city}</p>
                     <hr>
-                    <p class="modal-text">${data[index].phone}</p>
-                    <p class="modal-text">${data[index].location.street.number} ${data[index].location.street.name}, ${data[index].location.city}, ${data[index].location.state} ${data[index].location.postcode}</p>
-                    <p class="modal-text">Birthday ${dob.toLocaleDateString()}</p>
+                    <p class="modal-text">${data[i].phone}</p>
+                    <p class="modal-text">${data[i].location.street.number} ${data[i].location.street.name}, ${data[i].location.city}, ${data[i].location.state} ${data[i].location.postcode}</p>
+                    <p class="modal-text">Birthday: ${bday}</p>
                 </div>
             </div>
             <div class="modal-btn-container">
@@ -103,41 +106,52 @@ function generateModal(data, index) {
                 <button type="button" id="modal-next" class="modal-next btn">Next</button>
             </div>`
     containerDiv.innerHTML = html;
-    nextPrevBtn(data, index);
+    nextPrevBtn(data, i);
     return containerDiv;
 }
 
 /*** 
-** ----------------
+** ------------------------------------------------------
   Create next and prev button when the button was clicked
-** ----------------
+** ------------------------------------------------------
 ***/
 
-function nextPrevBtn(data, index) {
+function nextPrevBtn(data, i) {
     const prevBtn = containerDiv.querySelector('.modal-prev');
     const nextBtn = containerDiv.querySelector('.modal-next');
-
-
+    const modalContainer = document.querySelector('.modal-container');
+    let users = [];
     prevBtn.addEventListener('click', (e) => {
-        generateModal(data, index - 1)
+        generateModal(data, i - 1);
+
 
     });
 
     nextBtn.addEventListener('click', (e) => {
-        generateModal(data, index + 1)
+        generateModal(data, i + 1);
+
     });
+
+    //show or hide buttons when card was clicked.
+    if (users.length === 0) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = '';
+    } else {
+        prevBtn.style.display = '';
+        nextBtn.style.display = 'none';
+    }
 
 }
 
 /*** 
-** ----------------
+** -------------------------------------------
   Add event listener when the card was clicked
-** ----------------
+** -------------------------------------------
 ***/
 
 function createModalEvents(data) {
     const card = document.querySelectorAll('.card');
-    for (let i = 0; i < card.length; i++) {
+    for (let i = 0; i < card.length; i += 1) {
         card[i].addEventListener('click', () => {
             body.appendChild(generateModal(data, i));
         });
@@ -145,9 +159,9 @@ function createModalEvents(data) {
 }
 
 /*** 
-** ----------------
+** -------------------
   Closed modal button
-** ----------------
+** -------------------
 ***/
 
 function closeModel() {
@@ -156,9 +170,9 @@ function closeModel() {
 }
 
 /***
-** ----------------------
+** -----------------------
    Create Search function
-** ----------------------
+** -----------------------
 ***/
 
 function createSearch() {
@@ -170,10 +184,10 @@ function createSearch() {
     `
     search.innerHTML = searchField;
 
-    // add event listener to search input
+    //     add event listener to search input
     const searchInput = document.querySelector('#search-input');
-    searchInput.addEventListener('keyup', () => {
-        const searchResult = searchInput.value.toLowerCase();
+    searchInput.addEventListener('keyup', (e) => {
+        const searchResult = e.target.value.toLowerCase();
         filterNames(searchResult);
 
     });
@@ -182,19 +196,18 @@ function createSearch() {
     const submit = document.querySelector('#search-submit');
     submit.addEventListener('click', (e) => {
         e.preventDefault();
-        filterNames();
+        const searchResult = e.target.firstElementChild.value.toLowerCase();
+        filterNames(searchResult);
 
     });
 
 }
 
-
 /***
-** ---------------
-   Event Listeners
-** ---------------
+** ----------------------------------------------------------
+   Create a search by name and add no search result function
+** ----------------------------------------------------------
 ***/
-
 
 // create a function to search by name
 function filterNames(input) {
@@ -210,9 +223,10 @@ function filterNames(input) {
             empolyeeCard[i].style.display = 'none';
         }
     }
+
     //create error message when is no search result found
     if (foundCardsArr.length === 0) {
-        console.log(foundCardsArr)
+        console.log(foundCardsArr);
         let errorMessage = document.querySelector('.no-result');
         if (!errorMessage) {
             errorMessage = document.createElement('h2');
@@ -228,6 +242,7 @@ function filterNames(input) {
         }
     }
 }
+
 /***
 ** ---------------------------------------
    change background color and text color
